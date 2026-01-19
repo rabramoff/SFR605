@@ -37,7 +37,7 @@ When you hit "Create Project" this will clone a copy of the git project from the
 
 If you anticipate making changes to a git project on GitHub then, instead of cloning from https://github.com/rabramoff/SFR605 you should go to that website and click on the "Fork" button in the top right corner. This requires that you have an account on GitHub, which is free and easy to set up. Once you fork the repository, this will make a copy to https://github.com/username/SFR605 where _username_ is your GitHub username, and you can use that as your Repository URL.
 
-If you just can't get Git to work, you can download this activity from the same website, https://github.com/rabramoff/SFR605, by clicking on the "Download ZIP" button in the bottom right.
+If you just can't get Git to work, you can download this activity from the same website, https://github.com/rabramoff/SFR605, by clicking on "Download ZIP" button under the green "Code" button's drop down menu.
 
 Finally, in R you can go to File > Open File and open the exercise of the day.
 
