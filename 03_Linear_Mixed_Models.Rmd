@@ -1,5 +1,5 @@
 ---
-title: "03_Mixed_Models.Rmd"
+title: "Tutorial 3 - Linear Mixed Models.Rmd"
 author: "SFR605"
 output: html_document
 ---
