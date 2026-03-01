@@ -4,7 +4,7 @@ author: "SFR 605"
 output: html_document
 ---
 
-The objective of this week's tutorial is to familiarize yourself with the tools and techniques to do exploratory analyses for time series analysis and to fit a basic Bayesian AR(1) model.
+The objective of this week's tutorial is to familiarize yourself with the tools and techniques to do exploratory analyses for time series analysis and fit an autoregressive integrated moving average model (ARIMA).
 
 ## Part 1: Exploratory analysis 
 
@@ -87,7 +87,7 @@ pacf(dxt)  ## Partial ACF of the first differences
  
 Now that we've calculated a number of diagnostics, let’s explore how me might structure our time-series model.  The flow chart below serves as an aid to help suggest what order of the ARIMA(p,d,q) model is likely to be a good description of the data.  You should have already calculated all of the plots necessary in order to work through this flowchart.  As a reminder, the ARIMA(p,d,q) is the general case of the autoregressive model, the moving average model, and the integrated model.  The degree of each of these models are such that an AR(p) model and a MA(q) model are ones that have p or q lags respectively.  An I(d) model is one where we're modeling a data set that has been differenced d times.  Therefore, as examples, an AR(1) model is equivalent to an ARIMA(1,0,0) model, and an MA(1) model on the first-differences of a time series would be an ARIMA(0,1,1).
  
-![ARIMA Flow Chart](images/ts002.jpg)
+![ARIMA Flow Chart](img/ts002.jpg)
  
 ### Task 3
 4.  Based on the diagnostics you have already performed, what ARIMA model is likely to perform best? What orders should p, d, and q be? Why? Should you fit the model to xt or rx?
@@ -97,42 +97,3 @@ Now that we've calculated a number of diagnostics, let’s explore how me might 
 arima(xt,c(p,d,q))
 ```
 Then propose alternative models that are similar to the one you fit (e.g. increase or decrease orders by 1).  Based on AIC scores what model provides the best fit?  Provide a table of models you tried and their AIC scores.
-
-# Part 3: Bayesian AR(1)
-
-For the last part of this lab we will explore how to add autocorrelated error to a data model in a Bayesian context. Looking back to our first exploratory plots on detrending, we can see that the decline in ozone is approximately linear
-
-```{r}
-data <- list(time = 1980:2008,y = ozone$Mean)
-MLE.fit <- lm(y~time,data)
-plot(y~time,data)
-abline(MLE.fit,col=2)
-```
-
-However, if we wanted to fit a Bayesian linear model to this trend we might want to account for the autocorrelation in the data. Conceptually, to do so we'd want to switch our standard Gaussian likelihood with independent residuals to a multivariate Gaussian likelihood with a covariance matrix. 
-```
-    y ~ dmnorm(mu,SIGMA)
-```
-Note in this case that y and mu are both vectors and we don't need a loop over `y[i]` because we're fitting all the y's at once. We also need to calculate `SIGMA` within our JAGS code
-```
-  SIGMA <- inverse((1/sigma)/(1-rho^2)*rho^H)
-```
-where H is the distance matrix described in lecture 
-```{r}
-data$H = as.matrix(dist(1:nrow(ozone),diag = TRUE,upper = TRUE))
-data$H
-```
-and (1/sigma) converts the precision to a variance and `inverse` translates the covariance matrix into the precision matrix that JAGS wants. We also need to add a prior on rho
-```
-  rho   ~ dunif(-1,1)
-```
-
-### Task 4
-
-6. Fit the AR(1) linear model described above to the ozone data. You can do this either by modifying the basic univariate regression model from Lab 6, adding the components described above, or by modifying the linear repeated measures model from Lesson 33 by removing the for loop and changing `X[i,]` to a single vector `time`, and `g[i,]` to a single vector `y`.  Report **and interpret** summary and convergence statistics and density plots for **all parameters**. You do not need to report stats for intermediate calculations (e.g. mu). 
-
-Hints/warnings:
-* This model can be slow to converge
-* The units on the ozone data are small (and thus variance priors should be given careful thought).
-* A dmvnorm prior on beta will result in conjugacy with the dmvnorm likelihood, while separate dnorm priors on beta[1] and beta[2] will not.
-
